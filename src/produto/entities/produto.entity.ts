@@ -30,7 +30,7 @@ export class Produto {
   descricao?: string;
 
   @Column({ default: true })
-  ativo: boolean;
+  ativoo: boolean;
 
   @CreateDateColumn()
   createdAt: Date;
