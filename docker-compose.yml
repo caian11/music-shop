@@ -14,19 +14,5 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
 
-  app:
-    container_name: musicshop_app
-    build: .  # Lê o Dockerfile na raiz e executa a multi-stage build
-    depends_on:
-      - db
-    ports:
-      - "3000:3000"
-    environment:
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_USER: postgres
-      DB_PASS: 3119
-      DB_NAME: musicShop
-
 volumes:
   db-data:

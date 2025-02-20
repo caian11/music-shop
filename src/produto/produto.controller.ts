@@ -2,13 +2,13 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { ProdutoService } from './produto.service';
 import { CreateProdutoDto } from './dto/create-produto.dto';
 
-@Controller('produto')
+@Controller('produtos')
 export class ProdutoController {
   constructor(private readonly produtoService: ProdutoService) {}
 
   @Post()
-  create(@Body() createProdutoDto: CreateProdutoDto) {
-    return this.produtoService.create(createProdutoDto);
+  create(@Body() data: CreateProdutoDto) {
+    return this.produtoService.create(data);
   }
 
   @Get()
@@ -22,8 +22,8 @@ export class ProdutoController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() createProdutoDto: CreateProdutoDto) {
-    return this.produtoService.update(+id, createProdutoDto);
+  update(@Param('id') id: string, @Body() data: CreateProdutoDto) {
+    return this.produtoService.update(+id, data);
   }
 
   @Delete(':id')
