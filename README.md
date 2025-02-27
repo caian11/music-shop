@@ -3,7 +3,7 @@
 npm run start:dev
 
 
-***DOCKER***
+***DOCKER DATABASE***
 
 docker compose up -d
 
