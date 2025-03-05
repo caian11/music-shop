@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
@@ -12,6 +12,25 @@ export class UsuarioService {
   ) {}
 
   async create(data: CreateUsuarioDto): Promise<Usuario> {
+    // Verifica se o email já está cadastrado
+    const usuarioExistente = await this.usuarioRepository.findOne({ where: { email: data.email } });
+    if (usuarioExistente) {
+      throw new BadRequestException({
+        errors: [
+          { field: 'email', message: 'O email informado já está em uso.' }
+        ]
+      });
+    }
+
+    // Validação extra para senha (caso queira reforçar além do @MinLength)
+    if (data.senha.length < 6) {
+      throw new BadRequestException({
+        errors: [
+          { field: 'senha', message: 'A senha deve conter pelo menos 6 caracteres.' }
+        ]
+      });
+    }
+
     const usuario = this.usuarioRepository.create(data);
     return this.usuarioRepository.save(usuario);
   }
