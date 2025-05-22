@@ -1,7 +1,13 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
+import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { Usuario } from './entities/usuario.entity';
 
 @Injectable()
@@ -12,26 +18,20 @@ export class UsuarioService {
   ) {}
 
   async create(data: CreateUsuarioDto): Promise<Usuario> {
-    // Verifica se o email já está cadastrado
-    const usuarioExistente = await this.usuarioRepository.findOne({ where: { email: data.email } });
-    if (usuarioExistente) {
+    const exist = await this.usuarioRepository.findOne({
+      where: { email: data.email },
+    });
+    if (exist) {
       throw new BadRequestException({
-        errors: [
-          { field: 'email', message: 'O email informado já está em uso.' }
-        ]
+        errors: [{ field: 'email', message: 'E-mail já em uso.' }],
       });
     }
 
-    // Validação extra para senha (caso queira reforçar além do @MinLength)
-    if (data.senha.length < 6) {
-      throw new BadRequestException({
-        errors: [
-          { field: 'senha', message: 'A senha deve conter pelo menos 6 caracteres.' }
-        ]
-      });
-    }
-
-    const usuario = this.usuarioRepository.create(data);
+    const hash = await bcrypt.hash(data.senha, 10);
+    const usuario = this.usuarioRepository.create({
+      ...data,
+      senha: hash,
+    });
     return this.usuarioRepository.save(usuario);
   }
 
@@ -43,9 +43,27 @@ export class UsuarioService {
     return this.usuarioRepository.findOne({ where: { id } });
   }
 
-  async update(id: number, data: Partial<CreateUsuarioDto>): Promise<Usuario> {
-    await this.usuarioRepository.update(id, data);
-    return this.findOne(id);
+  async findByEmail(email: string, opts?: { withPassword: boolean }) {
+    if (opts?.withPassword) {
+      return this.usuarioRepository
+        .createQueryBuilder('u')
+        .addSelect('u.senha')
+        .where('u.email = :email', { email })
+        .getOne();
+    }
+    return this.usuarioRepository.findOne({ where: { email } });
+  }
+
+  async update(id: number, data: UpdateUsuarioDto): Promise<Usuario> {
+    if (data.senha) {
+      data.senha = await bcrypt.hash(data.senha, 10);
+    }
+
+    const usuario = await this.usuarioRepository.preload({ id, ...data });
+    if (!usuario) {
+      throw new NotFoundException(`Usuário ${id} não encontrado.`);
+    }
+    return this.usuarioRepository.save(usuario);
   }
 
   async remove(id: number): Promise<void> {

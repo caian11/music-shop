@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { Exclude } from 'class-transformer';
 
 @Entity('usuarios')
 export class Usuario {
@@ -11,7 +18,8 @@ export class Usuario {
   @Column({ unique: true, length: 150 })
   email: string;
 
-  @Column()
+  @Exclude()
+  @Column({ select: false })
   senha: string;
 
   @CreateDateColumn({ type: 'timestamp' })
