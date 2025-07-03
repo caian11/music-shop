@@ -17,11 +17,8 @@ export class Produto {
   @Column({ nullable: true })
   marca: string;
 
-  @Column({ nullable: true })
-  categoria: string;
-
   @Column('decimal', { precision: 10, scale: 2 })
-  preco: number;
+  valor: number;
 
   @Column({ type: 'int', default: 0 })
   quantidadeEstoque: number;
@@ -30,7 +27,7 @@ export class Produto {
   descricao?: string;
 
   @Column({ default: true })
-  ativo: boolean;
+  status: boolean;
 
   @CreateDateColumn()
   createdAt: Date;
