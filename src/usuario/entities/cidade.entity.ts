@@ -4,8 +4,10 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { Uf } from './estado.entity';
+import { Endereco } from './endereco.entity';
 
 @Entity('cidade')
 export class Cidade {
@@ -18,4 +20,7 @@ export class Cidade {
   @ManyToOne(() => Uf, (uf) => uf.cidades, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'uf' })
   uf: Uf;
+
+  @OneToMany(() => Endereco, (endereco) => endereco.cidade)
+  enderecos: Endereco[];
 }
