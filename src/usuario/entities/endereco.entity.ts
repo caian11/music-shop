@@ -5,10 +5,11 @@ import {
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
+  JoinColumn,
 } from 'typeorm';
 import { Cidade } from './cidade.entity';
 
-@Entity('enderecos')
+@Entity('endereco')
 export class Endereco {
   @PrimaryGeneratedColumn('uuid')
   id: number;
@@ -29,6 +30,7 @@ export class Endereco {
   cep: string;
 
   @ManyToOne(() => Cidade, (cidade) => cidade.enderecos, { eager: true })
+  @JoinColumn({ name: 'cidade' })
   cidade: Cidade;
 
   @CreateDateColumn()

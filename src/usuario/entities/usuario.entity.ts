@@ -3,10 +3,12 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  UpdateDateColumn, ManyToMany, JoinTable,
+  UpdateDateColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
-import {Endereco} from "./endereco.entity";
+import { Endereco } from './endereco.entity';
 
 @Entity('usuarios')
 export class Usuario {
@@ -22,6 +24,9 @@ export class Usuario {
   @Exclude()
   @Column({ select: false })
   senha: string;
+
+  @Column({ type: 'text', nullable: true })
+  access_token: string;
 
   @ManyToMany(() => Endereco, { cascade: true, eager: true })
   @JoinTable({

@@ -137,4 +137,8 @@ export class UsuarioService {
   async remove(id: number): Promise<void> {
     await this.usuarioRepository.delete(id);
   }
+
+  async salvarAccessToken(id: number, token: string): Promise<void> {
+    await this.usuarioRepository.update(id, { access_token: token });
+  }
 }
