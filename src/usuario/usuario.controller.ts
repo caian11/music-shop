@@ -43,9 +43,11 @@ export class UsuarioController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
-  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateUsuarioDto) {
-    return this.usuarioService.update(id, dto);
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: UpdateUsuarioDto,
+  ) {
+    return this.usuarioService.update(id, data);
   }
 
   @Delete(':id')

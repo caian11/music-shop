@@ -9,12 +9,18 @@ import { Repository } from 'typeorm';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { Usuario } from './entities/usuario.entity';
+import { Endereco } from './entities/endereco.entity';
+import { Cidade } from './entities/cidade.entity';
+import { Uf } from './entities/estado.entity';
 
 @Injectable()
 export class UsuarioService {
   constructor(
     @InjectRepository(Usuario)
     private usuarioRepository: Repository<Usuario>,
+    private enderecoRepository: Repository<Endereco>,
+    private cidadeRepository: Repository<Cidade>,
+    private estadoRepository: Repository<Uf>,
   ) {}
 
   async create(data: CreateUsuarioDto): Promise<Usuario> {
@@ -55,14 +61,70 @@ export class UsuarioService {
   }
 
   async update(id: number, data: UpdateUsuarioDto): Promise<Usuario> {
+    const usuario = await this.usuarioRepository.findOne({
+      where: { id },
+      relations: ['enderecos'],
+    });
+
+    if (!usuario) {
+      throw new NotFoundException(`Usuário ${id} não encontrado.`);
+    }
+
+    // Atualiza senha se houver
     if (data.senha) {
       data.senha = await bcrypt.hash(data.senha, 10);
     }
 
-    const usuario = await this.usuarioRepository.preload({ id, ...data });
-    if (!usuario) {
-      throw new NotFoundException(`Usuário ${id} não encontrado.`);
+    // Atualiza campos do usuário
+    this.usuarioRepository.merge(usuario, data);
+
+    const enderecosAssociados: Endereco[] = [];
+
+    if (data.enderecos?.length) {
+      for (const item of data.enderecos) {
+        const cidade = await this.cidadeRepository.findOneBy({
+          id: item.cidadeId,
+        });
+
+        if (!cidade) {
+          throw new BadRequestException(
+            `Cidade com ID ${item.cidadeId} não encontrada.`,
+          );
+        }
+
+        let endereco: Endereco;
+
+        if (item.id) {
+          // Atualiza endereço existente
+          const existente = await this.enderecoRepository.findOne({
+            where: { id: item.id },
+          });
+
+          if (!existente) {
+            throw new NotFoundException(
+              `Endereço com ID ${item.id} não encontrado.`,
+            );
+          }
+
+          endereco = this.enderecoRepository.merge(existente, {
+            ...item,
+            cidade,
+          });
+        } else {
+          // Cria novo endereço
+          endereco = this.enderecoRepository.create({
+            ...item,
+            cidade,
+          });
+        }
+
+        const salvo = await this.enderecoRepository.save(endereco);
+        enderecosAssociados.push(salvo);
+      }
+
+      usuario.enderecos = enderecosAssociados;
     }
+
     return this.usuarioRepository.save(usuario);
   }
 

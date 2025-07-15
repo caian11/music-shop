@@ -3,9 +3,10 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  UpdateDateColumn,
+  UpdateDateColumn, ManyToMany, JoinTable,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
+import {Endereco} from "./endereco.entity";
 
 @Entity('usuarios')
 export class Usuario {
@@ -21,6 +22,14 @@ export class Usuario {
   @Exclude()
   @Column({ select: false })
   senha: string;
+
+  @ManyToMany(() => Endereco, { cascade: true, eager: true })
+  @JoinTable({
+    name: 'usuario_enderecos',
+    joinColumn: { name: 'usuario_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'endereco_id', referencedColumnName: 'id' },
+  })
+  enderecos: Endereco[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
