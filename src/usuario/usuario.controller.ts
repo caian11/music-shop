@@ -30,24 +30,17 @@ export class UsuarioController {
     return this.usuarioService.findAll();
   }
 
-  @Get('me')
-  @UseGuards(JwtAuthGuard)
-  me(@Request() req) {
-    return req.user;
-  }
-
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.usuarioService.findOne(id);
   }
 
-  @Patch(':id')
-  update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() data: UpdateUsuarioDto,
-  ) {
-    return this.usuarioService.update(id, data);
+  @UseGuards(JwtAuthGuard)
+  @Patch('me')
+  async update(@Request() req, @Body() data: UpdateUsuarioDto) {
+    const usuarioId = req.user.id;
+    return this.usuarioService.update(usuarioId, data);
   }
 
   @Delete(':id')

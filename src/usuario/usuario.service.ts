@@ -18,8 +18,14 @@ export class UsuarioService {
   constructor(
     @InjectRepository(Usuario)
     private usuarioRepository: Repository<Usuario>,
+
+    @InjectRepository(Endereco)
     private enderecoRepository: Repository<Endereco>,
+
+    @InjectRepository(Cidade)
     private cidadeRepository: Repository<Cidade>,
+
+    @InjectRepository(Uf)
     private estadoRepository: Repository<Uf>,
   ) {}
 
