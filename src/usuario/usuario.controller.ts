@@ -24,16 +24,17 @@ export class UsuarioController {
     return this.usuarioService.create(dto);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  findMe(@Request() req) {
+    const usuarioId = req.user.id;
+    return this.usuarioService.findMe(usuarioId);
+  }
+
   @Get()
   @UseGuards(JwtAuthGuard)
   findAll() {
     return this.usuarioService.findAll();
-  }
-
-  @Get(':id')
-  @UseGuards(JwtAuthGuard)
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.usuarioService.findOne(id);
   }
 
   @UseGuards(JwtAuthGuard)

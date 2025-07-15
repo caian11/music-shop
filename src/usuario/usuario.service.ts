@@ -47,6 +47,36 @@ export class UsuarioService {
     return this.usuarioRepository.save(usuario);
   }
 
+  /*
+  async findMe(id: number): Promise<Usuario> {
+    const usuario = await this.usuarioRepository.findOne({
+      where: { id },
+      relations: ['enderecos', 'enderecos.cidade', 'enderecos.cidade.uf'],
+    });
+
+    if (!usuario) {
+      throw new NotFoundException(`Usuário ${id} não encontrado.`);
+    }
+
+    return usuario;
+  }
+*/
+  async findMe(id: number): Promise<Usuario> {
+    const usuario = await this.usuarioRepository
+      .createQueryBuilder('usuario')
+      .leftJoinAndSelect('usuario.enderecos', 'endereco')
+      .leftJoinAndSelect('endereco.cidade', 'cidade')
+      .leftJoinAndSelect('cidade.uf', 'uf')
+      .where('usuario.id = :id', { id })
+      .getOne();
+
+    if (!usuario) {
+      throw new NotFoundException(`Usuário ${id} não encontrado.`);
+    }
+
+    return usuario;
+  }
+
   async findAll(): Promise<Usuario[]> {
     return this.usuarioRepository.find();
   }
