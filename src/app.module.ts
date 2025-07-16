@@ -8,6 +8,7 @@ import { AppService } from './app.service';
 import { UsuarioModule } from './usuario/usuario.module';
 import { AuthModule } from './auth/auth.module';
 import { CidadeModule } from './usuario/cidade.module';
+import { PedidoModule } from './pedido/pedido.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { CidadeModule } from './usuario/cidade.module';
     UsuarioModule,
     CidadeModule,
     AuthModule,
+    PedidoModule,
   ],
   controllers: [AppController],
   providers: [AppService],

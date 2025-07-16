@@ -1,33 +1,51 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Body,
+  Patch,
+  UseGuards, Delete,
+} from '@nestjs/common';
 import { ProdutoService } from './produto.service';
-import { CreateProdutoDto } from './dto/create-produto.dto';
+import { Produto } from './entities/produto.entity';
+import { ProdutoDto } from './dto/create-produto.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
-@Controller('produtos')
+@Controller('produto')
 export class ProdutoController {
   constructor(private readonly produtoService: ProdutoService) {}
 
-  @Post()
-  create(@Body() data: CreateProdutoDto) {
-    return this.produtoService.create(data);
-  }
-
   @Get()
-  findAll() {
+  @UseGuards(JwtAuthGuard)
+  async findAll(): Promise<Produto[]> {
     return this.produtoService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.produtoService.findOne(+id);
+  @UseGuards(JwtAuthGuard)
+  async findOne(@Param('id') id: number): Promise<Produto> {
+    return this.produtoService.findOne(id);
+  }
+
+  @Post()
+  @UseGuards(JwtAuthGuard)
+  async create(@Body() produtoDto: ProdutoDto): Promise<Produto> {
+    return this.produtoService.create(produtoDto);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() data: CreateProdutoDto) {
-    return this.produtoService.update(+id, data);
+  @UseGuards(JwtAuthGuard)
+  async update(
+    @Param('id') id: number,
+    @Body() produtoDto: ProdutoDto,
+  ): Promise<Produto> {
+    return this.produtoService.update(id, produtoDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.produtoService.remove(+id);
+  @UseGuards(JwtAuthGuard)
+  async remove(@Param('id') id: number): Promise<void> {
+    await this.produtoService.remove(id);
   }
 }
