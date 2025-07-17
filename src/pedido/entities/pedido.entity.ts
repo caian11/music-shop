@@ -35,10 +35,9 @@ export class Pedido {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  // Relacionamento Many-to-Many com Produto
   @ManyToMany(() => Produto)
   @JoinTable({
-    name: 'pedido_produto', // nome da tabela de junção
+    name: 'pedido_produto',
     joinColumn: {
       name: 'pedido_id',
       referencedColumnName: 'id',

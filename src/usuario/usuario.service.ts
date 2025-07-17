@@ -92,12 +92,10 @@ export class UsuarioService {
       throw new NotFoundException(`Usuário ${id} não encontrado.`);
     }
 
-    // Atualiza senha se houver
     if (data.senha) {
       data.senha = await bcrypt.hash(data.senha, 10);
     }
 
-    // Atualiza campos do usuário
     this.usuarioRepository.merge(usuario, data);
 
     const enderecosAssociados: Endereco[] = [];
@@ -117,7 +115,6 @@ export class UsuarioService {
         let endereco: Endereco;
 
         if (item.id) {
-          // Atualiza endereço existente
           const existente = await this.enderecoRepository.findOne({
             where: { id: item.id },
           });
@@ -133,7 +130,6 @@ export class UsuarioService {
             cidade,
           });
         } else {
-          // Cria novo endereço
           endereco = this.enderecoRepository.create({
             ...item,
             cidade,

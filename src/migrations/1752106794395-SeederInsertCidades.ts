@@ -5,7 +5,6 @@ export class ImportAllCidadesWithExtraColumn1699540000000
   implements MigrationInterface
 {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // 1) cria tabela temporária com 10 colunas para casar com o CSV original
     await queryRunner.query(`
       CREATE TABLE municipios_tmp (
                                     concatufmun      TEXT,
@@ -21,7 +20,6 @@ export class ImportAllCidadesWithExtraColumn1699540000000
       );
     `);
 
-    // 2) importa do CSV montado em /municipios.csv no container Docker
     await queryRunner.query(`
       COPY municipios_tmp
       FROM '/municipios.csv'
@@ -33,7 +31,6 @@ export class ImportAllCidadesWithExtraColumn1699540000000
       );
     `);
 
-    // 3) insere apenas nome e uf (id correspondente)
     await queryRunner.query(`
       INSERT INTO cidade (nome, uf)
       SELECT nome_municipio,
@@ -43,7 +40,6 @@ export class ImportAllCidadesWithExtraColumn1699540000000
         AND nome_municipio IS NOT NULL;
     `);
 
-    // 4) descarta a tabela de staging
     await queryRunner.query(`DROP TABLE municipios_tmp;`);
   }
 

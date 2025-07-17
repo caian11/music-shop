@@ -5,7 +5,8 @@ import {
   Post,
   Body,
   Patch,
-  UseGuards, Delete,
+  UseGuards,
+  Delete,
 } from '@nestjs/common';
 import { ProdutoService } from './produto.service';
 import { Produto } from './entities/produto.entity';

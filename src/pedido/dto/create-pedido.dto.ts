@@ -31,5 +31,5 @@ export class CreatePedidoDto {
   @IsArray()
   @ArrayNotEmpty()
   @IsInt({ each: true })
-  produtos: number[]; // Array de IDs de produtos que serão associados ao pedido
+  produtos: number[];
 }

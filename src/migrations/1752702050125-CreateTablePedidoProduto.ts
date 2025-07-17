@@ -11,7 +11,6 @@ export class CreatePedidoProdutoTable1612318975383
   name = 'CreatePedidoProdutoTable1612318975383';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Criação da tabela pedido_produto (junção entre pedido e produto)
     await queryRunner.createTable(
       new Table({
         name: 'pedido_produto',
@@ -30,7 +29,6 @@ export class CreatePedidoProdutoTable1612318975383
       }),
     );
 
-    // Adicionar as chaves estrangeiras para a tabela pedido_produto
     await queryRunner.createForeignKey(
       'pedido_produto',
       new TableForeignKey({
@@ -53,7 +51,6 @@ export class CreatePedidoProdutoTable1612318975383
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    // Remover as chaves estrangeiras
     const table = await queryRunner.getTable('pedido_produto');
     const foreignKeyPedido = table.foreignKeys.find(
       (fk) => fk.columnNames.indexOf('pedido_id') !== -1,
@@ -70,7 +67,6 @@ export class CreatePedidoProdutoTable1612318975383
       await queryRunner.dropForeignKey('pedido_produto', foreignKeyProduto);
     }
 
-    // Remover a tabela pedido_produto
     await queryRunner.dropTable('pedido_produto');
   }
 }

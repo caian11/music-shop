@@ -42,7 +42,6 @@ export class PedidoService {
       numero,
     });
 
-    // Buscar os produtos a partir dos IDs fornecidos
     const produtosEncontrados = await this.produtoRepository.find({
       where: { id: In(produtos) },
     });
@@ -54,23 +53,17 @@ export class PedidoService {
       throw new NotFoundException(`Alguns produtos não foram encontrados`);
     }
 
-    // Associar os produtos ao pedido
     pedido.produtos = produtosEncontrados;
 
-    // Salvar o pedido com os produtos associados
     return await this.pedidoRepository.save(pedido);
   }
 
-  // Método para atualizar um pedido
   async update(id: number, updatePedidoDto: UpdatePedidoDto): Promise<Pedido> {
     const pedido = await this.findOne(id);
 
-    // Atualiza os dados básicos do pedido
     Object.assign(pedido, updatePedidoDto);
 
-    // Se novos produtos foram passados, atualizamos a lista de produtos
     if (updatePedidoDto.produtos) {
-      // Buscar os produtos a partir dos IDs fornecidos
       const produtosEncontrados = await this.produtoRepository.find({
         where: { id: In(updatePedidoDto.produtos) },
       });
@@ -82,15 +75,12 @@ export class PedidoService {
         throw new NotFoundException(`Alguns produtos não foram encontrados`);
       }
 
-      // Atualiza os produtos associados ao pedido
       pedido.produtos = produtosEncontrados;
     }
 
-    // Salvar o pedido com os novos produtos associados
     return await this.pedidoRepository.save(pedido);
   }
 
-  // Método para remover um pedido
   async remove(id: number): Promise<void> {
     const pedido = await this.pedidoRepository.findOne({
       where: { id },

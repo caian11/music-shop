@@ -48,5 +48,4 @@ export class ProdutoService {
 
     await this.produtoRepository.delete(id);
   }
-
 }
